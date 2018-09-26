@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_app/models/post.dart';
+import 'package:flutter_app/services/post_services.dart';
+
 class DetailPage extends StatelessWidget {
   final int id;
 
@@ -13,16 +16,28 @@ class DetailPage extends StatelessWidget {
       ),
       body: Center(
           child: new Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              new RaisedButton(
-                onPressed: () {
-                  // 从详情页面传值回上个页面
-                  Navigator.pop(context, this.id + 10);
+              FutureBuilder<Post>(
+                future: fetchPost(id),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    var post = snapshot.data;
+                    return Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(post.title, style: TextStyle(fontSize: 22.0, color: Colors.black87,)),
+                        ],
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text("${snapshot.error}");
+                  }
+                  return Center(child: CircularProgressIndicator());
                 },
-                child: Text('返回'),
               ),
-              new Text('页面ID: ${id}'),
             ],
           )
       ),
